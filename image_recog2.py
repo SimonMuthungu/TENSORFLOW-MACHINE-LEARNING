@@ -2,7 +2,14 @@ import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
 
+# were getting alerted when accuracy from the metrics hits 95
+class myCallback(tf.keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs={}):
+    if logs.get('accuracy')>95:
+      print("\nWere very accurate, so were sotpping")
+      self.model.stop_training = True 
 
+callbacks = myCallback()
 data = tf.keras.datasets.fashion_mnist
 (training_data, training_labels), (test_data, test_labels) = data.load_data()
 
@@ -19,5 +26,5 @@ model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit(training_data, training_labels, epochs=5)
-model.evaluate(test_data, test_labels)
+model.fit(training_data, training_labels, epochs=50, callbacks=[callbacks])
+# model.evaluate(test_data, test_labels)
